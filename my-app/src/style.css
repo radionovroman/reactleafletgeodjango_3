@@ -1,0 +1,11 @@
+.inputstyle {
+
+ transform: rotate(10deg);
+
+}
+
+.row_layout{
+ display: flex;
+ flex-direction:row;
+}
+
