@@ -125,22 +125,6 @@ function App(event) {
   const coordinates = l.map(latLng => [latLng?.lng, latLng?.lat]);
 
 
-  // create GeoJSON object
-  const geoJ = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      geometry: {
-        type: "MultiPoint",
-        coordinates: coordinates,
-      },
-      properties: {
-        name: "Imported Points",
-      },
-    },
-  ],
-};
 
 
 
@@ -294,17 +278,6 @@ console.log(error);
 
 
   };
-
-
-
-
-
-
-
-
-
-
-
 
   return (
 
