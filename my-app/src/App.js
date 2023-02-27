@@ -4,9 +4,6 @@ import './App.css';
 import { MapContainer, TileLayer, SVGOverlay,Polygon,Polyline, LayerGroup,LayersControl, useMap, Marker, Popup } from 'react-leaflet' ;
 import axios from "axios";
 import { GeoJSON } from 'react-leaflet';
-import Canvas from "./Canvas";
-import MyMap from "./copmponents/MyMap";
-import CanvasOverlay from 'react-leaflet-canvas-overlay';
 import * as L from "leaflet";
 import MapPaint from "./copmponents/MapPaint";
 import LSquare from "./copmponents/Lcanvas";
@@ -125,22 +122,6 @@ function App(event) {
   const coordinates = l.map(latLng => [latLng?.lng, latLng?.lat]);
 
 
-  // create GeoJSON object
-  const geoJ = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      geometry: {
-        type: "MultiPoint",
-        coordinates: coordinates,
-      },
-      properties: {
-        name: "Imported Points",
-      },
-    },
-  ],
-};
 
 
 
@@ -287,24 +268,10 @@ console.log(error);
 
     {setComponents([]);
 
-
-
-
     }
 
 
   };
-
-
-
-
-
-
-
-
-
-
-
 
   return (
 
