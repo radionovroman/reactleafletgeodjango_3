@@ -319,7 +319,7 @@ console.log(error);
   <form>
   <link rel="stylesheet" href="style.css"/>
     <label  htmlFor="country">Country:</label>
-  <input  id="country" type={"text"} placeholder={"type a country here"} onKeyDown={handleSubmit}/>
+  <input  id="country" type={"text"} placeholder={"type a country here"} onKeyDown={updateName}/>
   </form>
     <button onClick={handleSubmit}>
       {"Submit"}
