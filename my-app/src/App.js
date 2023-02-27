@@ -5,10 +5,6 @@ import { MapContainer, TileLayer, SVGOverlay,Polygon,Polyline, LayerGroup,Layers
 import axios from "axios";
 import { GeoJSON } from 'react-leaflet';
 import * as L from "leaflet";
-import MapPaint from "./copmponents/MapPaint";
-import LSquare from "./copmponents/Lcanvas";
-import {createLeafComponent, useLeafletContext} from "@react-leaflet/core";
-import Canvas_hook from "./copmponents/Lcanvas";
 import Map_paint from "./DrawingArea";
 import Canvas_2 from "./copmponents/MapPaint";
 import {useHistory} from "react-router-dom";
