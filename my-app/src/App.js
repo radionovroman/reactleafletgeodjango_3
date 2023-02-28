@@ -68,24 +68,7 @@ const MyData = (props, event) => {
 };
 
 
-const MyGeoJson = (props) => {
-  const [data, setData] = useState();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(props.name);
-      setData(response.data);
-    };
-
-    fetchData();
-  }, [props.name]);
-
-  return data ? (
-    <GeoJSON data={data} />
-  ) : (
-    <p>No data available</p>
-  );
-};
 
 
 
@@ -113,11 +96,6 @@ const purpleOptions = { color: 'purple' }
 const csrfToken = Cookies.get('csrftoken');
 
 function App(event) {
-
-  const l = points.map(point => L.latLng(point.latitude, point.longitude));
-  const coordinates = l.map(latLng => [latLng?.lng, latLng?.lat]);
-
-
 
 
 
@@ -148,10 +126,7 @@ function App(event) {
           "lat": 2,
           "mpoly": {
   "type": "MultiPolygon",
-  "coordinates": [    [      [        [102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]
-      ]
-    ]
-  ]
+  "coordinates": points
 }
 
 
@@ -162,6 +137,7 @@ function App(event) {
 )
       .then((response) => {
 console.log(response);
+console.log("New country's coordinates are:",points)
 }, (error) => {
 console.log(error);
 })};
@@ -324,7 +300,7 @@ console.log(error);
 
        <NewData/>
 
-        <MyGeoJson/>
+
 
 
 
