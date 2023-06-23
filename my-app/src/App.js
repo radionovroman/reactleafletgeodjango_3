@@ -5,13 +5,27 @@ import { MapContainer, TileLayer, SVGOverlay,Polygon,Polyline, LayerGroup,Layers
 import axios from "axios";
 import { GeoJSON } from 'react-leaflet';
 import * as L from "leaflet";
-import Map_paint from "./DrawingArea";
 import Canvas_2 from "./copmponents/MapPaint";
 import {useHistory} from "react-router-dom";
 import Cookies from 'js-cookie';
-import  {points} from "./DrawingArea";
+import {useLeafletContext} from "@react-leaflet/core";
+import Map_paint from "./DrawingArea";
+import {store} from "./DrawingArea";
+import Wkt from 'terraformer-wkt-parser';
 
 
+let points_3 = {mpoly: 'MULTIPOLYGON(((0 0,0 1,1 1,1 0,0 0)),((2 2,2 3,3 3,3 2,2 2)))'}
+
+
+
+
+let points_2 = store.getState().points_2;
+
+
+store.subscribe(() => {
+  points_2 = store.getState().points_2;
+
+});
 
 
 const MyData = (props, event) => {
@@ -112,32 +126,38 @@ function App(event) {
   const handleSubmit = (e, props) => {
 		e.preventDefault();
 
+
       axios.post("http://127.0.0.1:8000/api/world/create", {
-          "name": post,
-          "area": 1,
-          "pop2005": 1,
-          "fips": "1",
-          "iso2": "1",
-          "iso3": "1",
-          "un": 1,
-          "region": 2,
-          "subregion": 2,
-          "lon": 2,
-          "lat": 2,
-          "mpoly": {
-  "type": "MultiPolygon",
-  "coordinates": points
+  "name": post,
+  "area": 1,
+  "pop2005": 1,
+  "fips": "1",
+  "iso2": "1",
+  "iso3": "1",
+  "un": 1,
+  "region": 2,
+  "subregion": 2,
+  "lon": null,
+  "lat": null,
+  "mpoly": {
+    "type": "MultiPolygon",
+    "coordinates": [
+          [
+              points_2
+]
+  ]}
 }
 
 
-        }, {
+
+        , {
     headers: {
         'X-CSRFToken': csrfToken
     }}
 )
       .then((response) => {
 console.log(response);
-console.log("New country's coordinates are:",points)
+console.log("New country's coordinates are:",points_2)
 }, (error) => {
 console.log(error);
 })};
@@ -198,7 +218,8 @@ console.log(error);
     console.log("value of 'name' changed to", name.slice(0, 42));
     console.log(components)
     console.log("Value of post is:", post)
-    console.log("Points:", points)
+    console.log("Points:", points_2)
+
 
     });
 
@@ -287,7 +308,7 @@ console.log(error);
         ) : (
           <Polyline positions={[]} />
         )}
-      
+
 
       {components}
 

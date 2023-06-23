@@ -1,6 +1,7 @@
 import {useLeafletContext} from "@react-leaflet/core";
 import * as L from "leaflet";
 import {useState, useEffect} from "react";
+import { createStore } from 'redux';
 
 
 
@@ -11,7 +12,37 @@ import {useState, useEffect} from "react";
 
 
 
-var points = [];
+const initialState = {
+  points: [],
+  points_2: [],
+};
+
+function pointsReducer(state = initialState, action) {
+  switch (action.type) {
+    case "UPDATE_POINTS":
+      return { ...state, points: action.payload };
+
+  case "UPDATE_POINTS_2":
+  return { ...state, points_2: action.payload };
+
+   case 'CONCAT_POINTS_2':
+      const updatedPoints_2 = [...action.payload];
+      updatedPoints_2.push(updatedPoints_2[0]); // add the first element to the end
+      return { ...state, points_2: updatedPoints_2 };
+
+      case 'CLEAR_POINTS':
+      return {
+        ...state,
+        points: []
+      };
+
+
+    default:
+      return state;
+  }
+}
+
+export const store = createStore(pointsReducer);
 
 
 
@@ -25,6 +56,7 @@ L.CustomLayer = L.Layer.extend({
         this._canvas = null;
         this._frame = null;
         this._delegate = null;
+        this._geojson = null; // add a _geojson property
         L.setOptions(this, options);
     },
 
@@ -72,6 +104,8 @@ L.CustomLayer = L.Layer.extend({
     },
     //-------------------------------------------------------------
     onAdd: function (map) {
+
+
         this._map = map;
         this._canvas = L.DomUtil.create('canvas', 'leaflet-layer');
         this.tiles = {};
@@ -134,9 +168,24 @@ L.CustomLayer = L.Layer.extend({
             map.doubleClickZoom.disable()
             map.boxZoom.disable()
             map.keyboard.disable()
-            points.push([latlng.lng, latlng.lat]);
+            // Dispatch the action to update the points array
+  store.dispatch({
+    type: "UPDATE_POINTS",
+    payload: [...store.getState().points, [latlng.lng, latlng.lat]],
+  });
 
+  store.dispatch({
+  type: "UPDATE_POINTS_2",
+  payload: [...store.getState().points_2, [latlng.lng, latlng.lat]],
+});
         };
+
+
+
+
+
+
+
 
         this._canvas.addEventListener('mousedown', startPosition);
         this._canvas.addEventListener('mouseup', finishedPosition);
@@ -144,9 +193,12 @@ L.CustomLayer = L.Layer.extend({
         this._canvas.style.position = "absolute";
         this._canvas.style.cursor = "crosshair"
         this._canvas.addEventListener('mouseup', function(e) {
+            const latlng = map.layerPointToLatLng([e.clientX - rect.left, e.clientY - rect.top]);
 
-
-
+    store.dispatch({
+  type: "CONCAT_POINTS_2",
+  payload: [...store.getState().points_2, [latlng.lng, latlng.lat]],
+});
 
 
             // Create a GeoJSON layer and add it to the map
@@ -156,30 +208,33 @@ L.CustomLayer = L.Layer.extend({
             "type": "Feature",
             "geometry": {
                 "type": "LineString",
-                "coordinates": points
+                "coordinates": store.getState().points,
 
             }
         }]
     };
+
+
     L.geoJSON(geojson).addTo(map);
 
+    // Set the _geojson property of the layer to the GeoJSON object
+  this._geojson = geojson;
+
+
     // Clear the points array
-    points = [];
+    //points = [];
+            // Dispatch an action to clear the points array
+  store.dispatch({
+    type: 'CLEAR_POINTS'
+  });
 });
-
-
-
-
-
-
-
-
-
-
         this.needRedraw();
-
-
     },
+
+    getGeojson: function() {
+        return this._geojson;
+    },
+
 
     //-------------------------------------------------------------
     onRemove: function (map) {
@@ -197,7 +252,7 @@ L.CustomLayer = L.Layer.extend({
 
 
         // Clear the points array
-        points = [];
+        //points = [];
 
         map.scrollWheelZoom.enable();
         map.dragging.enable();
@@ -271,22 +326,7 @@ L.CustomLayer = L.Layer.extend({
 
 
 const Map_paint = () => {
-    const [isDrawing, setIsDrawing] = useState(false)
-
-
     const ctx = useLeafletContext()
-
-
-
-
-
-
-
-
-
-
-
-
 
     useEffect(() => {
 
@@ -301,9 +341,9 @@ const Map_paint = () => {
         canvas_container.addLayer(new_grid_layer)
 
 
-
+        console.log("test points:", store.getState().points_2)
         console.log(new_grid_layer._canvas.ctx)
-        console.log("points are:", points)
+
 
 
         return () => {
@@ -323,5 +363,5 @@ const Map_paint = () => {
 
 }
 
-export {points}
+
 export default Map_paint
